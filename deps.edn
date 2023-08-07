@@ -2,7 +2,9 @@
  ["src"]
 
  :deps
- {com.wsscode/spec-inspec {:mvn/version "1.0.0-alpha2"}}
+ {com.wsscode/spec-inspec {:mvn/version "1.0.0-alpha2"}
+  org.clojure/alpha.spec {:git/url "https://github.com/clojure/spec-alpha2.git" 
+			  :sha "4cbfa677c4cd66339f18e1c122222c05c69e0d8e"}}
 
  :aliases
  {:provided
