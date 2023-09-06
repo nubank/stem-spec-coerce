@@ -110,7 +110,7 @@
 
     ;; The following tests can't work without using `eval`. We will avoid this
     ;; and hope that spec2 will give us a better way.
-    ;;(is (= (sc/coerce ::referenced-set ":a") :a))
+    (is (= (sc2/coerce ::referenced-set ":a") :a))
     ;;(is (= (sc/coerce ::calculated-set ":foo") :foo))
     ;;(is (= (sc/coerce ::nilable-referenced-set ":a") :a))
     ;;(is (= (sc/coerce ::nilable-calculated-set ":foo") :foo))

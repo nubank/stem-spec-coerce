@@ -251,10 +251,17 @@
               true
               x))))
 
+(defn- dereference [sym]
+  (var-get (resolve sym)))
+
+(defn- reference-to-homogeneous-set? [x]
+  (and (qualified-symbol? x) (some-> x resolve var-get spec-is-homogeneous-set?)))
+
 (defmulti sym->coercer
           (fn [x]
             (cond (spec-is-homogeneous-set? x)
                   (-> x first type->sym)
+                  (reference-to-homogeneous-set? x) (-> x dereference first type->sym)
                   (sequential? x)  (first x)
                   :else            x)))
 
