@@ -108,9 +108,11 @@
     ;;#?(:clj (is (= (sc/coerce ::uri-set "http://site.com") (URI. "http://site.com"))))
     #?(:clj (is (= (sc2/coerce ::decimal-set "42.42M") 42.42M)))
 
+    (is (= (sc2/coerce ::referenced-set ":a") :a))
+
     ;; The following tests can't work without using `eval`. We will avoid this
     ;; and hope that spec2 will give us a better way.
-    (is (= (sc2/coerce ::referenced-set ":a") :a))
+
     ;;(is (= (sc/coerce ::calculated-set ":foo") :foo))
     ;;(is (= (sc/coerce ::nilable-referenced-set ":a") :a))
     ;;(is (= (sc/coerce ::nilable-calculated-set ":foo") :foo))
