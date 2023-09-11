@@ -297,6 +297,31 @@
                                     :bool         "true"})))
   (is (= "garbage" (sc2/coerce ::simple-keys "garbage"))))
 
+(spec2/def ::simple-schema (spec2/schema [::infer-int ::bool]))
+(spec2/def ::nested-schema (spec2/schema [::infer-form ::simple-schema ::bool]))
+(spec2/def ::unnamespaced-schema (spec2/schema {:i ::infer-int
+                                                :nested (spec2/schema {:b ::bool})
+                                                #_#_:nested-enum #{:foo :bar}}))
+
+(deftest test-coerce-schema
+  (is (= {::infer-int 123}
+         (sc2/coerce ::simple-schema {::infer-int "123"})))
+  (is (= {::infer-form  [1 2 3]
+          ::simple-keys {::infer-int 456
+                         ::bool      true}
+          :bool         true}
+         (sc2/coerce ::nested-keys {::infer-form  ["1" "2" "3"]
+                                    ::simple-keys {::infer-int "456"
+                                                   ::bool      "true"}
+                                    :bool         "true"})))
+  (is (= "garbage" (sc2/coerce ::simple-keys "garbage")))
+  (is (= {:i 123
+          :nested {:b true}
+          #_#_:nested-enum :bar}
+         (sc2/coerce ::unnamespaced-schema {:i "123"
+                                            :nested {:b  "true"}
+                                            #_#_:nested-enum "bar"}))))
+
 (spec2/def ::head double?)
 (spec2/def ::body int?)
 (spec2/def ::arm int?)

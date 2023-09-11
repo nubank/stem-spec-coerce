@@ -323,9 +323,29 @@
                                            opts)))
                           (empty x))))))
 
+(defn- schema-parser
+  [[_ keyset & _rest]]
+  (let [keys-mapping (cond (map? keyset) keyset
+                           (sequential? keyset) (apply merge {} (filter map? keyset))
+                           :else {})]
+    (fn [x opts]
+      (cond->> x
+               (associative? x)
+               (reduce-kv (fn [m k v]
+                            (assoc m
+                                   k
+                                   (coerce (or (keys-mapping k) k)
+                                           v
+                                           opts)))
+                          (empty x))))))
+
 (defmethod sym->coercer `spec2/keys
   [form]
   (keys-parser form))
+
+(defmethod sym->coercer `spec2/schema
+  [form]
+  (schema-parser form))
 
 (defn parse-merge
   [[_ & pred-forms]]
