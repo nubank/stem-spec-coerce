@@ -103,6 +103,8 @@
     ;;(is (= (sc/coerce ::symbol-set "foo/bar") 'foo/bar))
     (is (= (sc2/coerce ::string-set "hey") "hey"))
     (is (= (sc2/coerce ::keyword-set ":b") :b))
+    (is (= (sc2/coerce ::keyword-set "b") :b))
+    (is (= (sc2/coerce ::string-set :hey) "hey"))
     ;(is (= (sc2/coerce ::uuid-set "d6e73cc5-95bc-496a-951c-87f11af0d839") #uuid "d6e73cc5-95bc-496a-951c-87f11af0d839"))
     (is (= (sc2/coerce ::nil-set "nil") nil))
     ;;#?(:clj (is (= (sc/coerce ::uri-set "http://site.com") (URI. "http://site.com"))))
@@ -147,7 +149,7 @@
        `double? 42.42 42.42
        `double? 42 42.0
        `string? 42 "42"
-       `string? :a ":a"
+       `string? :a "a"
        `string? :foo/bar ":foo/bar"
        `boolean? "true" true
        `boolean? "false" false

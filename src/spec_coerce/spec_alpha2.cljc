@@ -27,7 +27,7 @@
 
 (defn parse-string
   ([x] (parse-string x nil))
-  ([x _] (str x)))
+  ([x _] (if (simple-keyword? x) (name x) (str x))))
 
 (defn parse-long
   ([x] (parse-long x nil))
