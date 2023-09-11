@@ -58,5 +58,5 @@
       (recur registry parent))))
 
 (spec2/fdef registry-lookup
-            :args (spec2/cat :registry map? :k qualified-keyword?)
+            :args (spec2/cat :registry map? :k qualified-ident?)
             :ret any?)

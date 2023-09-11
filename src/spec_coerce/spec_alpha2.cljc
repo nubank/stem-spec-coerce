@@ -402,13 +402,19 @@
       (cond-> (nilable-spec? root-spec)
         gen-nilable-coercer)))
 
+(defn- lookup [k {::keys [overrides]}]
+  (when (qualified-ident? k)
+    (spec2-inspec/registry-lookup (merge @registry-ref overrides) k)))
+
 (defn infer-coercion
   "Infer a coercer function from a given spec."
-  [k]
+  [k opts]
   (let [root-spec (spec2-inspec/spec->root-sym k)]
-    (if (nilable-spec? root-spec)
-      (nilable-spec->coercion root-spec)
-      (spec->coercion root-spec))))
+    (or (lookup root-spec opts)
+        (if
+         (nilable-spec? root-spec)
+          (nilable-spec->coercion root-spec)
+          (spec->coercion root-spec)))))
 
 (defn coerce-fn
   "Get the coercing function from a given key. First it tries to lookup
@@ -416,9 +422,8 @@
   specs. In case nothing is found, identity function is returned."
   ([k] (coerce-fn k {::overrides *overrides*}))
   ([k {::keys [overrides] :as opts}]
-   (or (when (qualified-keyword? k)
-         (spec2-inspec/registry-lookup (merge @registry-ref overrides) k))
-       (infer-coercion k))))
+   (or (lookup k opts)
+       (infer-coercion k opts))))
 
 (defn coerce
   "Coerce a value x using coercer k. This function will first try to
@@ -457,7 +462,7 @@
   k)
 
 (spec2/fdef def-impl
-            :args (spec2/cat :k qualified-keyword?
+            :args (spec2/cat :k qualified-ident?
                              :coercion ifn?)
             :ret any?)
 

@@ -69,6 +69,10 @@
 ;(spec2/def ::unevaluatable-spec (letfn [(pred [x] (string? x))]
 ;                                  (spec2/spec pred)))
 
+(defn even-number? [x]
+  (and (int? x) (even? x)))
+(sc2/def spec-coerce.spec-alpha2-test/even-number? sc/parse-long)
+(spec2/def ::even-number even-number?)
 
 (defn safe-form
   "Return the spec form or nil."
@@ -121,7 +125,10 @@
     ;;(is (= (sc/coerce ::nilable-referenced-set-kw ":a") :a))
     ;;(is (= (sc/coerce ::nilable-calculated-set-kw ":foo") :foo))
 
-    (is (= (sc2/coerce ::unevaluatable-spec "just a string") "just a string"))))
+    (is (= (sc2/coerce ::unevaluatable-spec "just a string") "just a string")))
+
+  (testing "registering a coercion to a predicate symbol"
+    (is (= 98 (sc2/coerce ::even-number "98")))))
 
 (deftest test-coerce!
   (is (= (sc2/coerce! ::infer-int "123") 123))
