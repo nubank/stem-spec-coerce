@@ -28,12 +28,16 @@
     (second and-spec)
     and-spec))
 
+(defn accept-enum [spec]
+  (and (set? spec) spec))
+
 (defn spec->root-sym
   "Determine the main spec symbol from a spec form."
   [spec]
   (let [f (or (safe-form spec)
               (accept-symbol spec)
-              (accept-symbol-call spec))]
+              (accept-symbol-call spec)
+              (accept-enum spec))]
     (let [spec-def (form->spec f)]
       (if (qualified-keyword? spec-def)
         (recur spec-def)
