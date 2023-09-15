@@ -175,11 +175,24 @@
     (mapv fun x)
     (map fun x)))
 
-(defn parse-coll-of [[_ pred & _]]
-  (fn [x opts]
-    (cond->> x
-             (sequential? x)
-             (map-seq #(coerce pred % opts)))))
+
+(defn- empty-coll [kind x]
+  (or ({`vector? [], `set? #{}, `list? (), `map? {}} kind)
+      (empty x)))
+
+(defn- map-into [kind fun coll]
+  (case kind
+    ::lazy-seq (map fun coll) ;; by default, return a lazy seq yielded by (map ... ...)
+    `list? (apply list (map fun coll)) ;; if a list is called for explicitly, construct one (note that (into) with a list reverses the elements)
+    (into (empty-coll kind coll) (map fun) coll))) ;; otherwise rely on (empty) and into
+
+(defn parse-coll-of [[_ pred & args-seq]]
+  (let [args (apply hash-map args-seq)
+        kind (or (:kind args) ::lazy-seq)]
+    (fn [x opts]
+      (cond->> x
+               (or (sequential? x) (set? x))
+               (map-into kind #(coerce pred % opts))))))
 
 (defn parse-map-of [[_ kpred vpred & _]]
   (fn [x opts]

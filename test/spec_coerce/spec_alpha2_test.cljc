@@ -71,7 +71,7 @@
 
 (defn even-number? [x]
   (and (int? x) (even? x)))
-(sc2/def spec-coerce.spec-alpha2-test/even-number? sc/parse-long)
+(sc2/def spec-coerce.spec-alpha2-test/even-number? sc2/parse-long)
 (spec2/def ::even-number even-number?)
 
 (defn safe-form
@@ -415,3 +415,17 @@
   (is (= {:foo 1} (sc2/coerce ::multi {:foo "1"})))
   (is (= {:foo 1 :d :kw} (sc2/coerce ::multi {:d :kw :foo "1"})))
   (is (= "garbage" (sc2/coerce ::multi "garbage"))))
+
+(spec2/def ::something keyword?)
+(spec2/def ::a-set (spec2/coll-of ::something :kind set?))
+(spec2/def ::a-vector (spec2/coll-of ::something :kind vector?))
+(spec2/def ::a-list (spec2/coll-of ::something :kind list?))
+
+(deftest coll-of-kind
+  (is (set? (sc2/coerce! ::a-set #{:x :y})))
+  (is (vector? (sc2/coerce! ::a-vector '(:x :y))))
+
+  (doseq [spec    [::a-set ::a-vector ::a-list]
+          example ['(:x :y) [:x :y] #{:x :y}]]
+    (let [pred ({::a-set set? ::a-vector vector? ::a-list list?} spec)]
+     (is (pred (sc2/coerce! spec example))))))
